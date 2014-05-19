@@ -33,7 +33,7 @@ namespace Nerula.Test
 				.SetProperty(Environment.ConnectionProvider, typeof(SQLiteInMemoryConnectionProvider).AssemblyQualifiedName)
 				.SetProperty(Environment.ConnectionDriver, typeof(SQLite20Driver).AssemblyQualifiedName)
 				.SetProperty(Environment.ShowSql, "true")
-				.SetProperty(Environment.ConnectionString, "data source=:memory:")
+				.SetProperty(Environment.ConnectionString, "data source=:memory:;version=3")
 				.SetProperty(Environment.CollectionTypeFactoryClass, typeof(Net4CollectionTypeFactory).AssemblyQualifiedName)
 			;
 
