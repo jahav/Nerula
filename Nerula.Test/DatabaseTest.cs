@@ -20,10 +20,7 @@ namespace Nerula.Test
 	/// </summary>
 	public class DatabaseTest
 	{
-		/// <summary>
-		/// Once the tests closes the session, the in-memory db will be destroyed.
-		/// </summary>
-		public ISession Session { get; private set; }
+		private ISession keepAliveSession;
 
 		public ISessionFactory SessionFactory { get; private set; }
 
@@ -33,10 +30,10 @@ namespace Nerula.Test
 			var configuration = new Configuration()
 				.SetProperty(Environment.ReleaseConnections, "on_close") // http://www.codethinked.com/nhibernate-20-sqlite-and-in-memory-databases
 				.SetProperty(Environment.Dialect, typeof(SQLiteDialect).AssemblyQualifiedName)
+				.SetProperty(Environment.ConnectionProvider, typeof(SQLiteInMemoryConnectionProvider).AssemblyQualifiedName)
 				.SetProperty(Environment.ConnectionDriver, typeof(SQLite20Driver).AssemblyQualifiedName)
 				.SetProperty(Environment.ShowSql, "true")
 				.SetProperty(Environment.ConnectionString, "data source=:memory:")
-				//.SetProperty(Environment.ConnectionString, "data source=change.db")
 				.SetProperty(Environment.CollectionTypeFactoryClass, typeof(Net4CollectionTypeFactory).AssemblyQualifiedName)
 			;
 
@@ -46,19 +43,21 @@ namespace Nerula.Test
 			}
 
 			SessionFactory = configuration.BuildSessionFactory();
-			Session = SessionFactory.OpenSession();
+
+
+			keepAliveSession = SessionFactory.OpenSession();
 
 			// Note: since in-memory db is destroyed when session is closed, you can't use
 			// new SchemaExport(configuration).Execute(true, true, false), because it creates a session, creates schemas 
 			// and then disposes of the created session - effectively destroying db. Thus the other opened session
 			// doesn't have schemas ready. The result are errors like SQL logic error or missing database no such table
 			// We must create schema using our session.
-			new SchemaExport(configuration).Execute(true, true, false, Session.Connection, null);
+			new SchemaExport(configuration).Execute(true, true, false, keepAliveSession.Connection, null);
 		}
 
 		public void DatabaseTearDown()
 		{
-			Session.Dispose();
+			keepAliveSession.Dispose();
 		}
 	}
 }

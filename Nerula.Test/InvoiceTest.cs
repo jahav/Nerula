@@ -25,18 +25,23 @@ namespace Nerula.Test
 		public void CanSaveConjecture()
 		{
 			object id = null;
-			using (var tx = Session.BeginTransaction())
+			using (var session = SessionFactory.OpenSession())
 			{
-				var conjecture = new Conjecture("First conjecture", 100);
-				id = Session.Save(conjecture);
-				tx.Commit();
+				using (var tx = session.BeginTransaction())
+				{
+					var conjecture = new Conjecture("First conjecture", 100);
+					id = session.Save(conjecture);
+					tx.Commit();
+				}
 			}
-			Session.Clear();
-			using (var tx = Session.BeginTransaction())
+			using (var session = SessionFactory.OpenSession())
 			{
-				var loadedConjecture = Session.Get<Conjecture>(id);
-				Assert.IsNotNull(loadedConjecture);
-				tx.Commit();
+				using (var tx = session.BeginTransaction())
+				{
+					var loadedConjecture = session.Get<Conjecture>(id);
+					Assert.IsNotNull(loadedConjecture);
+					tx.Commit();
+				}
 			}
 		}
 
@@ -44,29 +49,34 @@ namespace Nerula.Test
 		public void CanAddAllocation()
 		{
 			object invoiceId = null;
-			using (var tx = Session.BeginTransaction())
+			using (var session = SessionFactory.OpenSession())
 			{
-				var invoice = new Invoice { Number = "VS001" };
-
-				invoice.AddAllocation(new Conjecture("First", 100), 70);
-				invoice.AddAllocation(new Conjecture("Second", 200), 100);
-
-				foreach (var conjecture in invoice.Allocations.Select(x => x.Conjecture))
+				using (var tx = session.BeginTransaction())
 				{
-					Session.Save(conjecture);
+					var invoice = new Invoice { Number = "VS001" };
+
+					invoice.AddAllocation(new Conjecture("First", 100), 70);
+					invoice.AddAllocation(new Conjecture("Second", 200), 100);
+
+					foreach (var conjecture in invoice.Allocations.Select(x => x.Conjecture))
+					{
+						session.Save(conjecture);
+					}
+
+					invoiceId = session.Save(invoice);
+
+					tx.Commit();
 				}
-
-				invoiceId = Session.Save(invoice);
-
-				tx.Commit();
 			}
-			Session.Clear();
-			using (var tx = Session.BeginTransaction())
+			using (var session = SessionFactory.OpenSession())
+			using (var tx = session.BeginTransaction())
 			{
-				var invoice = Session.Get<Invoice>(invoiceId);
-				Assert.IsNotNull(invoice);
-				Assert.AreEqual(2, invoice.Allocations.Count);
-				tx.Commit();
+				{
+					var invoice = session.Get<Invoice>(invoiceId);
+					Assert.IsNotNull(invoice);
+					Assert.AreEqual(2, invoice.Allocations.Count);
+					tx.Commit();
+				}
 			}
 		}
 
@@ -75,36 +85,41 @@ namespace Nerula.Test
 		public void CanUpdateAllocationInOneQuery()
 		{
 			object invoiceId = null;
-			using (var tx = Session.BeginTransaction())
+			using (var session = SessionFactory.OpenSession())
 			{
-				var invoice = new Invoice { Number = "VS001" };
-
-				invoice.AddAllocation(new Conjecture("First", 100), 50);
-				invoice.AddAllocation(new Conjecture("Second", 200), 10);
-
-				foreach (var conjecture in invoice.Allocations.Select(x => x.Conjecture))
+				using (var tx = session.BeginTransaction())
 				{
-					Session.Save(conjecture);
+					var invoice = new Invoice { Number = "VS001" };
+
+					invoice.AddAllocation(new Conjecture("First", 100), 50);
+					invoice.AddAllocation(new Conjecture("Second", 200), 10);
+
+					foreach (var conjecture in invoice.Allocations.Select(x => x.Conjecture))
+					{
+						session.Save(conjecture);
+					}
+
+					invoiceId = session.Save(invoice);
+
+					tx.Commit();
 				}
-
-				invoiceId = Session.Save(invoice);
-
-				tx.Commit();
 			}
-			Console.WriteLine("Clear session");
-			Session.Clear();
-			using (var tx = Session.BeginTransaction())
+
+			using (var session = SessionFactory.OpenSession())
 			{
-				var invoice = Session.Get<Invoice>(invoiceId);
-				Assert.IsNotNull(invoice);
-				Assert.AreEqual(2, invoice.Allocations.Count);
+				using (var tx = session.BeginTransaction())
+				{
+					var invoice = session.Get<Invoice>(invoiceId);
+					Assert.IsNotNull(invoice);
+					Assert.AreEqual(2, invoice.Allocations.Count);
 
-				invoice.Allocations[0].Amount = 10;
-				invoice.Allocations[0].UpdaterName = "HAL9000";
+					invoice.Allocations[0].Amount = 10;
+					invoice.Allocations[0].UpdaterName = "HAL9000";
 
-				Session.Update(invoice);
+					session.Update(invoice);
 
-				tx.Commit();
+					tx.Commit();
+				}
 			}
 		}
 	}
