@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="Nerula.Data" namespace="Nerula.Data">
+	<class name="Invoice">
+		<id name="InvoiceId">
+			<generator class="identity"/>
+		</id>
+
+		<property name="Number" />
+
+
+		<idbag name="Allocations" inverse="false" cascade="all-delete-orphan">
+			<collection-id column="AllocationId" type="Int32">
+				<generator class="identity" />
+			</collection-id>
+			<key column="Invoice" />
+			<composite-element class="Allocation">
+				<property name="Amount" not-null="true"/>
+				<property name="UpdatedDate" not-null="true"/>
+				<property name="UpdaterName" not-null="true"/>
+			</composite-element>
+		</idbag>
+	</class>
+</hibernate-mapping>
