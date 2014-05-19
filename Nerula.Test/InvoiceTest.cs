@@ -74,15 +74,19 @@ namespace Nerula.Test
 			int allocatinsCount = 5;
 			object invoiceId = CreateInvoiceWithAllocations("VS001", allocatinsCount);
 
-			using (var session = SessionFactory.OpenSession())
+			var interceptor = new SqlQueryInterceptor();
+			using (var session = SessionFactory.OpenSession(interceptor))
 			{
 				using (var tx = session.BeginTransaction())
 				{
 					var invoice = session.Get<Invoice>(invoiceId);
 					invoice.AddAllocation(invoice.Allocations.First().Conjecture, 20);
+
+					interceptor.ClearSqlQueries();
 					session.Update(invoice);
 					tx.Commit();
 
+					Assert.AreEqual(1, interceptor.SqlQueries.Count());
 					Assert.AreEqual(allocatinsCount + 1, invoice.Allocations.Count);
 				}
 			}
@@ -94,7 +98,8 @@ namespace Nerula.Test
 			int allocatinsCount = 5;
 			object invoiceId = CreateInvoiceWithAllocations("VS001", allocatinsCount);
 
-			using (var session = SessionFactory.OpenSession())
+			var interceptor = new SqlQueryInterceptor();
+			using (var session = SessionFactory.OpenSession(interceptor))
 			{
 				using (var tx = session.BeginTransaction())
 				{
@@ -105,8 +110,11 @@ namespace Nerula.Test
 					invoice.Allocations[0].Amount = 10;
 					invoice.Allocations[0].UpdaterName = "HAL9000";
 
+					interceptor.ClearSqlQueries();
 					session.Update(invoice);
 					tx.Commit();
+
+					Assert.AreEqual(1, interceptor.SqlQueries.Count());
 				}
 			}
 		}
@@ -118,16 +126,20 @@ namespace Nerula.Test
 			int allocatinsCount = 5;
 			object invoiceId = CreateInvoiceWithAllocations("VS001", allocatinsCount);
 
-			using (var session = SessionFactory.OpenSession())
+			var interceptor = new SqlQueryInterceptor();
+			using (var session = SessionFactory.OpenSession(interceptor))
 			{
 				using (var tx = session.BeginTransaction())
 				{
 					var invoice = session.Get<Invoice>(invoiceId);
 					invoice.Allocations.RemoveAt(2);
+					
+					interceptor.ClearSqlQueries();
 					session.Update(invoice);
 					tx.Commit();
-
+		
 					Assert.AreEqual(allocatinsCount - 1, invoice.Allocations.Count);
+					Assert.AreEqual(1, interceptor.SqlQueries.Count());
 				}
 			}
 		}

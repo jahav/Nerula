@@ -40,7 +40,7 @@ namespace Nerula.Test
 			}
 		}
 
-		void Dispose()
+		new void Dispose()
 		{
 			keepAlive = false;
 			base.Dispose();

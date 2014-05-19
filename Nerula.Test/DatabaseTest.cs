@@ -34,8 +34,7 @@ namespace Nerula.Test
 				.SetProperty(Environment.ConnectionDriver, typeof(SQLite20Driver).AssemblyQualifiedName)
 				.SetProperty(Environment.ShowSql, "true")
 				.SetProperty(Environment.ConnectionString, "data source=:memory:;version=3")
-				.SetProperty(Environment.CollectionTypeFactoryClass, typeof(Net4CollectionTypeFactory).AssemblyQualifiedName)
-			;
+				.SetProperty(Environment.CollectionTypeFactoryClass, typeof(Net4CollectionTypeFactory).AssemblyQualifiedName);
 
 			foreach (var entityType in mappedEntityTypes)
 			{
