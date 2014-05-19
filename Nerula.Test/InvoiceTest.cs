@@ -68,6 +68,25 @@ namespace Nerula.Test
 			}
 		}
 
+		[TestMethod]
+		public void CanCreateAllocationInOneQuery()
+		{
+			int allocatinsCount = 5;
+			object invoiceId = CreateInvoiceWithAllocations("VS001", allocatinsCount);
+
+			using (var session = SessionFactory.OpenSession())
+			{
+				using (var tx = session.BeginTransaction())
+				{
+					var invoice = session.Get<Invoice>(invoiceId);
+					invoice.AddAllocation(invoice.Allocations.First().Conjecture, 20);
+					session.Update(invoice);
+					tx.Commit();
+
+					Assert.AreEqual(allocatinsCount + 1, invoice.Allocations.Count);
+				}
+			}
+		}
 
 		[TestMethod]
 		public void CanUpdateAllocationInOneQuery()
@@ -87,8 +106,28 @@ namespace Nerula.Test
 					invoice.Allocations[0].UpdaterName = "HAL9000";
 
 					session.Update(invoice);
-
 					tx.Commit();
+				}
+			}
+		}
+
+
+		[TestMethod]
+		public void CanDeleteAllocationInOneQuery()
+		{
+			int allocatinsCount = 5;
+			object invoiceId = CreateInvoiceWithAllocations("VS001", allocatinsCount);
+
+			using (var session = SessionFactory.OpenSession())
+			{
+				using (var tx = session.BeginTransaction())
+				{
+					var invoice = session.Get<Invoice>(invoiceId);
+					invoice.Allocations.RemoveAt(2);
+					session.Update(invoice);
+					tx.Commit();
+
+					Assert.AreEqual(allocatinsCount - 1, invoice.Allocations.Count);
 				}
 			}
 		}
@@ -114,7 +153,6 @@ namespace Nerula.Test
 					}
 
 					invoiceId = session.Save(invoice);
-
 					tx.Commit();
 				}
 			}
