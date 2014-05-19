@@ -24,16 +24,7 @@ namespace Nerula.Test
 		[TestMethod]
 		public void CanSaveConjecture()
 		{
-			object id = null;
-			using (var session = SessionFactory.OpenSession())
-			{
-				using (var tx = session.BeginTransaction())
-				{
-					var conjecture = new Conjecture("First conjecture", 100);
-					id = session.Save(conjecture);
-					tx.Commit();
-				}
-			}
+			object id = CreateConjecture("First conjecture", 100);
 			using (var session = SessionFactory.OpenSession())
 			{
 				using (var tx = session.BeginTransaction())
@@ -45,29 +36,26 @@ namespace Nerula.Test
 			}
 		}
 
-		[TestMethod]
-		public void CanAddAllocation()
+		private object CreateConjecture(string conjectureName, int amount)
 		{
-			object invoiceId = null;
+			object id = null;
 			using (var session = SessionFactory.OpenSession())
 			{
 				using (var tx = session.BeginTransaction())
 				{
-					var invoice = new Invoice { Number = "VS001" };
-
-					invoice.AddAllocation(new Conjecture("First", 100), 70);
-					invoice.AddAllocation(new Conjecture("Second", 200), 100);
-
-					foreach (var conjecture in invoice.Allocations.Select(x => x.Conjecture))
-					{
-						session.Save(conjecture);
-					}
-
-					invoiceId = session.Save(invoice);
-
+					var conjecture = new Conjecture(conjectureName, 100);
+					id = session.Save(conjecture);
 					tx.Commit();
 				}
 			}
+			return id;
+		}
+
+		[TestMethod]
+		public void CanAddAllocation()
+		{
+			object invoiceId = CreateInvoiceWithAllocations("Invoice", 2);
+
 			using (var session = SessionFactory.OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
@@ -84,16 +72,42 @@ namespace Nerula.Test
 		[TestMethod]
 		public void CanUpdateAllocationInOneQuery()
 		{
+			int allocatinsCount = 5;
+			object invoiceId = CreateInvoiceWithAllocations("VS001", allocatinsCount);
+
+			using (var session = SessionFactory.OpenSession())
+			{
+				using (var tx = session.BeginTransaction())
+				{
+					var invoice = session.Get<Invoice>(invoiceId);
+					Assert.IsNotNull(invoice);
+					Assert.AreEqual(allocatinsCount, invoice.Allocations.Count);
+
+					invoice.Allocations[0].Amount = 10;
+					invoice.Allocations[0].UpdaterName = "HAL9000";
+
+					session.Update(invoice);
+
+					tx.Commit();
+				}
+			}
+		}
+
+		private object CreateInvoiceWithAllocations(string invoiceNumber, int allocationsCount)
+		{
 			object invoiceId = null;
 			using (var session = SessionFactory.OpenSession())
 			{
 				using (var tx = session.BeginTransaction())
 				{
-					var invoice = new Invoice { Number = "VS001" };
+					var invoice = new Invoice { Number = invoiceNumber };
 
-					invoice.AddAllocation(new Conjecture("First", 100), 50);
-					invoice.AddAllocation(new Conjecture("Second", 200), 10);
+					for (int i = 0; i < allocationsCount; i++)
+					{
+						invoice.AddAllocation(new Conjecture(string.Format("Conj_{0:00}", i), 100), 50);
+					}
 
+					// I am saving this explicitely, but I could simply add  cascade="all" to Conjecture property of Allocation
 					foreach (var conjecture in invoice.Allocations.Select(x => x.Conjecture))
 					{
 						session.Save(conjecture);
@@ -104,23 +118,7 @@ namespace Nerula.Test
 					tx.Commit();
 				}
 			}
-
-			using (var session = SessionFactory.OpenSession())
-			{
-				using (var tx = session.BeginTransaction())
-				{
-					var invoice = session.Get<Invoice>(invoiceId);
-					Assert.IsNotNull(invoice);
-					Assert.AreEqual(2, invoice.Allocations.Count);
-
-					invoice.Allocations[0].Amount = 10;
-					invoice.Allocations[0].UpdaterName = "HAL9000";
-
-					session.Update(invoice);
-
-					tx.Commit();
-				}
-			}
+			return invoiceId;
 		}
 	}
 }

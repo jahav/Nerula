@@ -19,7 +19,7 @@ namespace Nerula.Data
 			this.Name = name;
 			this.Amount = amount;
 		}
-		public virtual int ConjectureId { get; set; }
+		public virtual int ConjectureId { get; protected set; }
 		public virtual string Name { get; set; }
 		public virtual int Amount { get; set; }
 	}

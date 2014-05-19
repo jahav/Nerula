@@ -7,13 +7,13 @@
 
 		<property name="Number" />
 
-
 		<idbag name="Allocations" inverse="false" cascade="all-delete-orphan">
 			<collection-id column="AllocationId" type="Int32">
 				<generator class="identity" />
 			</collection-id>
 			<key column="Invoice" />
 			<composite-element class="Allocation">
+				<many-to-one name="Conjecture"/>
 				<property name="Amount" not-null="true"/>
 				<property name="UpdatedDate" not-null="true"/>
 				<property name="UpdaterName" not-null="true"/>

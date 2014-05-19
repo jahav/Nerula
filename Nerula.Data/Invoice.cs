@@ -12,7 +12,7 @@ namespace Nerula.Data
 			Allocations = new List<Allocation>();
 		}
 
-		public virtual int InvoiceId { get; set; }
+		public virtual int InvoiceId { get; protected set; }
 		public virtual string Number { get; set; }
 
 		public virtual IList<Allocation> Allocations { get; set; }
