@@ -2,7 +2,7 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="Nerula.Data" namespace="Nerula.Data">
 	<class name="Invoice">
 		<id name="InvoiceId">
-			<generator class="identity"/>
+			<generator class="increment"/>
 		</id>
 
 		<property name="Number" />
