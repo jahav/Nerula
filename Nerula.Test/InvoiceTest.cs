@@ -104,9 +104,6 @@ namespace Nerula.Test
 				using (var tx = session.BeginTransaction())
 				{
 					var invoice = session.Get<Invoice>(invoiceId);
-					Assert.IsNotNull(invoice);
-					Assert.AreEqual(allocatinsCount, invoice.Allocations.Count);
-
 					invoice.Allocations[0].Amount = 10;
 					invoice.Allocations[0].UpdaterName = "HAL9000";
 
