@@ -5,9 +5,10 @@ using System.Text;
 
 namespace Nerula.Data
 {
+	[Serializable]
 	public class Allocation
 	{
-		public virtual int AllocationId { get; set; }
+		// Notice lack of Id - it is present in database, but not in component
 		public virtual Invoice Invoice { get; set; }
 		public virtual Conjecture Conjecture { get; set; }
 		public virtual decimal Amount { get; set; }
