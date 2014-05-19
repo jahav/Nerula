@@ -700,9 +700,9 @@ namespace Nerula.Test
 
 		#region Nested type: ISetSnapshot
 
-		private interface ISetSnapshot<T> : ICollection<T>, ICollection
+		private interface ISetSnapshot<TItem> : ICollection<TItem>, ICollection
 		{
-			T this[T element] { get; }
+			TItem this[TItem element] { get; }
 		}
 
 		#endregion
@@ -710,28 +710,28 @@ namespace Nerula.Test
 		#region Nested type: SetSnapShot
 
 		[Serializable]
-		private class SetSnapShot<T> : ISetSnapshot<T>
+		private class SetSnapShot<TItem> : ISetSnapshot<TItem>
 		{
-			private readonly List<T> elements;
+			private readonly List<TItem> elements;
 
 			private SetSnapShot()
 			{
-				elements = new List<T>();
+				elements = new List<TItem>();
 			}
 
 			public SetSnapShot(int capacity)
 			{
-				elements = new List<T>(capacity);
+				elements = new List<TItem>(capacity);
 			}
 
-			public SetSnapShot(IEnumerable<T> collection)
+			public SetSnapShot(IEnumerable<TItem> collection)
 			{
-				elements = new List<T>(collection);
+				elements = new List<TItem>(collection);
 			}
 
 			#region ISetSnapshot<T> Members
 
-			public IEnumerator<T> GetEnumerator()
+			public IEnumerator<TItem> GetEnumerator()
 			{
 				return elements.GetEnumerator();
 			}
@@ -741,7 +741,7 @@ namespace Nerula.Test
 				return GetEnumerator();
 			}
 
-			public void Add(T item)
+			public void Add(TItem item)
 			{
 				elements.Add(item);
 			}
@@ -751,17 +751,17 @@ namespace Nerula.Test
 				throw new InvalidOperationException();
 			}
 
-			public bool Contains(T item)
+			public bool Contains(TItem item)
 			{
 				return elements.Contains(item);
 			}
 
-			public void CopyTo(T[] array, int arrayIndex)
+			public void CopyTo(TItem[] array, int arrayIndex)
 			{
 				elements.CopyTo(array, arrayIndex);
 			}
 
-			public bool Remove(T item)
+			public bool Remove(TItem item)
 			{
 				throw new InvalidOperationException();
 			}
@@ -786,17 +786,17 @@ namespace Nerula.Test
 				get { return ((ICollection) elements).IsSynchronized; }
 			}
 
-			int ICollection<T>.Count
+			int ICollection<TItem>.Count
 			{
 				get { return elements.Count; }
 			}
 
 			public bool IsReadOnly
 			{
-				get { return ((ICollection<T>) elements).IsReadOnly; }
+				get { return ((ICollection<TItem>) elements).IsReadOnly; }
 			}
 
-			public T this[T element]
+			public TItem this[TItem element]
 			{
 				get
 				{
@@ -805,7 +805,7 @@ namespace Nerula.Test
 					{
 						return elements[idx];
 					}
-					return default(T);
+					return default(TItem);
 				}
 			}
 
