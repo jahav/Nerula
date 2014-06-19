@@ -24,7 +24,31 @@ namespace Nerula.Test
 
 		public ISessionFactory SessionFactory { get; private set; }
 
+		public void DatabaseSetup(params System.Reflection.Assembly[] assembliesWithMappings)
+		{
+			DatabaseSetup(configuration =>
+				{
+					foreach (var assembly in assembliesWithMappings)
+						configuration.AddAssembly(assembly);
+				}
+			);
+		}
+
 		public void DatabaseSetup(params System.Type[] mappedEntityTypes)
+		{
+			DatabaseSetup(configuration =>
+				{
+					foreach (var entityType in mappedEntityTypes)
+						configuration.AddClass(entityType);
+				}
+			);
+		}
+
+		/// <summary>
+		/// Setup database and create schema in the in-memory database.
+		/// </summary>
+		/// <param name="addMapping">Action that adds mappings to the configuration so the application can work with some mappings.</param>
+		private void DatabaseSetup(System.Action<Configuration> addMapping)
 		{
 			// Also note the ReleaseConnections "on_close"
 			var configuration = new Configuration()
@@ -36,13 +60,9 @@ namespace Nerula.Test
 				.SetProperty(Environment.ConnectionString, "data source=:memory:;version=3")
 				.SetProperty(Environment.CollectionTypeFactoryClass, typeof(Net4CollectionTypeFactory).AssemblyQualifiedName);
 
-			foreach (var entityType in mappedEntityTypes)
-			{
-				configuration = configuration.AddClass(entityType);
-			}
+			addMapping(configuration);
 
 			SessionFactory = configuration.BuildSessionFactory();
-
 
 			keepAliveSession = SessionFactory.OpenSession();
 
