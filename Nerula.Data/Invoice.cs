@@ -17,6 +17,8 @@ namespace Nerula.Data
 
 		public virtual IList<Allocation> Allocations { get; set; }
 
+		public virtual IList<Conjecture> Conjectures { get; set; }
+
 		public virtual Allocation AddAllocation(Conjecture conjecture, int allocatedAmount)
 		{
 			var allocation = new Allocation

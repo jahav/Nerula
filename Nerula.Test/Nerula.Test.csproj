@@ -66,12 +66,15 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="ComponentSortTest.cs" />
     <Compile Include="DatabaseTest.cs" />
     <Compile Include="InvoiceTest.cs" />
     <Compile Include="Net4Collections.cs" />
+    <Compile Include="NHibernateEqualsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SQLiteInMemoryConnectionProvider.cs" />
     <Compile Include="SqlQueryInterceptor.cs" />
+    <Compile Include="InvoiceManyToManyTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Nerula.Data\Nerula.Data.csproj">

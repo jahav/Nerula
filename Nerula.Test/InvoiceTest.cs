@@ -130,13 +130,35 @@ namespace Nerula.Test
 				{
 					var invoice = session.Get<Invoice>(invoiceId);
 					invoice.Allocations.RemoveAt(2);
-					
+
 					interceptor.ClearSqlQueries();
 					session.Update(invoice);
 					tx.Commit();
-		
+
 					Assert.AreEqual(allocatinsCount - 1, invoice.Allocations.Count);
 					Assert.AreEqual(1, interceptor.SqlQueries.Count());
+				}
+			}
+		}
+
+		[TestMethod]
+		public void CanSelectThroughManyToMany()
+		{
+			var allocatinsCount = 5;
+			object invoiceId = CreateInvoiceWithAllocations("VS001", allocatinsCount);
+
+			using (var session = SessionFactory.OpenSession())
+			{
+				using (var tx = session.BeginTransaction())
+				{
+					var invoice = session.Get<Invoice>(invoiceId);
+					Assert.AreEqual(allocatinsCount, invoice.Conjectures.Count);
+					tx.Commit();
+
+					foreach (var conjecture in invoice.Conjectures)
+					{
+						Console.WriteLine("Conjecture: {0} - {1}", conjecture.Name, conjecture.Amount);
+					}
 				}
 			}
 		}

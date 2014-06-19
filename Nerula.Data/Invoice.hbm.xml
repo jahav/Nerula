@@ -4,9 +4,7 @@
 		<id name="InvoiceId">
 			<generator class="increment"/>
 		</id>
-
 		<property name="Number" />
-
 		<idbag name="Allocations" inverse="false" cascade="all-delete-orphan">
 			<collection-id column="AllocationId" type="Int32">
 				<generator class="identity" />
@@ -19,5 +17,14 @@
 				<property name="UpdaterName" not-null="true"/>
 			</composite-element>
 		</idbag>
+
+		<idbag name="Conjectures" table="Allocations" inverse="false" cascade="all-delete-orphan">
+			<collection-id column="AllocationId" type="Int32">
+				<generator class="identity" />
+			</collection-id>
+			<key column="Invoice" />
+			<many-to-many column="Conjecture" class="Conjecture" />
+		</idbag>
+
 	</class>
 </hibernate-mapping>
