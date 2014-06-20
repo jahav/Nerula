@@ -55,5 +55,24 @@ namespace Nerula.Test
 				}
 			}
 		}
+
+		[TestMethod]
+		public void EqualsIsCalledOnProxy()
+		{
+			using (var session = this.SessionFactory.OpenSession())
+			{
+				using (var tx = session.BeginTransaction())
+				{
+					var post0 = session.Load<Post>(100);
+					var post = session.Load<Post>(1);
+					Assert.IsTrue(post is INHibernateProxy, "Post through load is not a proxy");
+
+					var post2 = session.Load<Post>(2);
+					Assert.IsTrue(post2 is INHibernateProxy, "Post through load is not a proxy");
+					var equals = post.Equals(post2);
+					Assert.IsFalse(equals);
+				}
+			}
+		}
 	}
 }

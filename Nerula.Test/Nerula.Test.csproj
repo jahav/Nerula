@@ -75,6 +75,7 @@
     <Compile Include="SQLiteInMemoryConnectionProvider.cs" />
     <Compile Include="SqlQueryInterceptor.cs" />
     <Compile Include="InvoiceManyToManyTest.cs" />
+    <Compile Include="CacheEvict.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Nerula.Data\Nerula.Data.csproj">
