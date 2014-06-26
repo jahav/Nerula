@@ -1,3 +1,4 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/nfkekfm5rb0m9i8b)](https://ci.appveyor.com/project/jahav/nerula)
 Nerula
 ======
 
