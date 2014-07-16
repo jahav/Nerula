@@ -62,6 +62,7 @@ namespace Nerula.Test
 				.SetProperty(Environment.ConnectionString, "data source=:memory:;version=3")
 				.SetProperty(Environment.CollectionTypeFactoryClass, typeof(Net4CollectionTypeFactory).AssemblyQualifiedName)
                 .SetProperty(Environment.UseSecondLevelCache, "true")
+                .SetProperty(Environment.CacheDefaultExpiration, "10") // Default 2nd lvl cache expiration, in seconds
                 .SetProperty(Environment.CacheProvider, typeof(SysCacheProvider).AssemblyQualifiedName);
 
 			addMapping(configuration);

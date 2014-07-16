@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{42267415-4C8D-4724-B076-0F062B892DA8}</ProjectGuid>
+    <ProjectGuid>{54632850-0099-492B-B3C7-43D7D49329FD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Nerula.Wip</RootNamespace>
     <AssemblyName>Nerula.Wip</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -50,13 +49,11 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Wip.hbm.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="WipPriceComponent.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Nerula.Data\Nerula.Data.csproj">
-      <Project>{6df822f0-a3a6-4e62-9047-9238ee27c172}</Project>
+      <Project>{5bb8b701-a6b4-4366-8d6b-b0915a128077}</Project>
       <Name>Nerula.Data</Name>
     </ProjectReference>
   </ItemGroup>
