@@ -5,13 +5,6 @@ VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nerula.Test", "Nerula.Test\Nerula.Test.csproj", "{E92BC6CE-A13C-4439-91AD-78784DBF6249}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{EA39D24C-C1AD-4855-B082-DEB71C5E8DFC}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nerula.Wip", "Nerula.Wip\Nerula.Wip.csproj", "{42267415-4C8D-4724-B076-0F062B892DA8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nerula.Data", "Nerula.Data\Nerula.Data.csproj", "{6DF822F0-A3A6-4E62-9047-9238EE27C172}"
