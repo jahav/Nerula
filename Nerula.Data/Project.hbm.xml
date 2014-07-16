@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="Nerula.Data"
+                   namespace="Nerula.Data">
+  <class name="Project">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <property name="Code" not-null="true" />
+    <property name="StartDate" not-null="true" />
+  </class>
+
+  <sql-query name="DeleteProjectSync">
+    <![CDATA[
+      delete from Project where Code = :Code
+    ]]>
+    <query-param name="Code" type="String" />
+    <synchronize table="Project"/>
+  </sql-query>
+
+  <sql-query name="DeleteProjectSyncWrongTable">
+    <![CDATA[
+      delete from Project where Code = :Code
+    ]]>
+    <query-param name="Code"
+                 type="String" />
+    <!-- We are syncing the wrong table -->
+    <synchronize table="Blog"/>
+
+  </sql-query>
+  
+  <sql-query name="DeleteProject">
+    <![CDATA[
+      delete from Project where Code = :Code
+    ]]>
+    <query-param name="Code" type="String" />
+  </sql-query>
+</hibernate-mapping>

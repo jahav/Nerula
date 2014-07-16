@@ -5,15 +5,24 @@ namespace Nerula.Data
 {
 	public class Blog : EntityBase
 	{
-		public virtual string Name { get; set; }
-
-		// This would be configured to lazy-load.
-		public virtual ISet<Post> Posts { get; protected set; }
-
+		/// <summary>
+		/// Ctor for NH.
+		/// </summary>
 		public Blog()
 		{
 			Posts = new HashSet<Post>();
 		}
+
+		public Blog(int id)
+			: base(id)
+		{
+			Posts = new HashSet<Post>();
+		}
+
+		public virtual string Name { get; set; }
+
+		// This would be configured to lazy-load.
+		public virtual ISet<Post> Posts { get; set; }
 
 		public virtual Post AddPost(string title, string body)
 		{

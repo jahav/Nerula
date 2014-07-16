@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="Nerula.Data"
+                   namespace="Nerula.Data">
+  <class name="WipPriceComponent"
+         table="WipPriceComponent">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <many-to-one name="Wip" />
+    <property name="EstWorkload" />
+    <property name="SoldWorkload" />
+    <property name="Type" />
+  </class>
+</hibernate-mapping>

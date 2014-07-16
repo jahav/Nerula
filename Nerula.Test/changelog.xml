@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+  <changeSet author="Honza (generated)" id="1405112777812-1">
+    <createTable tableName="t_projects">
+      <column autoIncrement="true" name="id" type="INTEGER">
+        <constraints primaryKey="true"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="Honza (generated)" id="1405112783790-1">
+    <createTable tableName="t_units">
+      <column autoIncrement="true" name="id" type="INTEGER">
+        <constraints primaryKey="true" />
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="Honza (generated)" id="1405112783790-2">
+    <addPrimaryKey columnNames="id" tableName="t_units"/>
+  </changeSet>
+</databaseChangeLog>

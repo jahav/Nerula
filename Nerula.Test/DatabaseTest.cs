@@ -1,5 +1,6 @@
 ﻿using Nerula.Data;
 using NHibernate;
+using NHibernate.Caches.SysCache;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Driver;
@@ -57,8 +58,11 @@ namespace Nerula.Test
 				.SetProperty(Environment.ConnectionProvider, typeof(SQLiteInMemoryConnectionProvider).AssemblyQualifiedName)
 				.SetProperty(Environment.ConnectionDriver, typeof(SQLite20Driver).AssemblyQualifiedName)
 				.SetProperty(Environment.ShowSql, "true")
+                .SetProperty(Environment.FormatSql, "false")
 				.SetProperty(Environment.ConnectionString, "data source=:memory:;version=3")
-				.SetProperty(Environment.CollectionTypeFactoryClass, typeof(Net4CollectionTypeFactory).AssemblyQualifiedName);
+				.SetProperty(Environment.CollectionTypeFactoryClass, typeof(Net4CollectionTypeFactory).AssemblyQualifiedName)
+                .SetProperty(Environment.UseSecondLevelCache, "true")
+                .SetProperty(Environment.CacheProvider, typeof(SysCacheProvider).AssemblyQualifiedName);
 
 			addMapping(configuration);
 

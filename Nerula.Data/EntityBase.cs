@@ -4,7 +4,17 @@ namespace Nerula.Data
 {
 	public abstract class EntityBase
 	{
-		public virtual int Id { get; protected set; }
+		/// <summary>
+		/// Ctor for NH.
+		/// </summary>
+		protected EntityBase() { }
+
+		protected EntityBase(int id)
+		{
+			Id = id;
+		}
+
+		public virtual int Id { get; set; }
 
 		protected bool IsTransient { get { return Id == 0; } }
 

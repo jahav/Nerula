@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Nerula.Data")]
+[assembly: AssemblyTitle("Nerula.Wip")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Nerula.Data")]
+[assembly: AssemblyProduct("Nerula.Wip")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("2b0625e1-1799-4751-817e-1dcdaad2e9b3")]
+[assembly: Guid("d85d0eff-c336-4953-9e2a-a4c2e0d82d20")]
 
 // Version information for an assembly consists of the following four values:
 //
