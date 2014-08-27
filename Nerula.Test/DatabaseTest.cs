@@ -48,24 +48,21 @@ namespace Nerula.Test
 		/// <summary>
 		/// Setup database and create schema in the in-memory database.
 		/// </summary>
-		/// <param name="addMapping">Action that adds mappings to the configuration so the application can work with some mappings.</param>
-		private void DatabaseSetup(System.Action<Configuration> addMapping)
+		/// <param name="modifyConfiguration">Action that adds mappings to the configuration so the application can work with some mappings.</param>
+		protected void DatabaseSetup(System.Action<Configuration> modifyConfiguration)
 		{
 			// Also note the ReleaseConnections "on_close"
-			var configuration = new Configuration()
-				.SetProperty(Environment.ReleaseConnections, "on_close") // http://www.codethinked.com/nhibernate-20-sqlite-and-in-memory-databases
-				.SetProperty(Environment.Dialect, typeof(SQLiteDialect).AssemblyQualifiedName)
-				.SetProperty(Environment.ConnectionProvider, typeof(SQLiteInMemoryConnectionProvider).AssemblyQualifiedName)
-				.SetProperty(Environment.ConnectionDriver, typeof(SQLite20Driver).AssemblyQualifiedName)
-				.SetProperty(Environment.ShowSql, "true")
+            var configuration = new Configuration()
+                .SetProperty(Environment.ReleaseConnections, "on_close") // http://www.codethinked.com/nhibernate-20-sqlite-and-in-memory-databases
+                .SetProperty(Environment.Dialect, typeof(SQLiteDialect).AssemblyQualifiedName)
+                .SetProperty(Environment.ConnectionProvider, typeof(SQLiteInMemoryConnectionProvider).AssemblyQualifiedName)
+                .SetProperty(Environment.ConnectionDriver, typeof(SQLite20Driver).AssemblyQualifiedName)
+                .SetProperty(Environment.ShowSql, "true")
                 .SetProperty(Environment.FormatSql, "false")
-				.SetProperty(Environment.ConnectionString, "data source=:memory:;version=3")
-				.SetProperty(Environment.CollectionTypeFactoryClass, typeof(Net4CollectionTypeFactory).AssemblyQualifiedName)
-                .SetProperty(Environment.UseSecondLevelCache, "true")
-                .SetProperty(Environment.CacheDefaultExpiration, "10") // Default 2nd lvl cache expiration, in seconds
-                .SetProperty(Environment.CacheProvider, typeof(SysCacheProvider).AssemblyQualifiedName);
+                .SetProperty(Environment.ConnectionString, "data source=:memory:;version=3")
+                .SetProperty(Environment.CollectionTypeFactoryClass, typeof(Net4CollectionTypeFactory).AssemblyQualifiedName);
 
-			addMapping(configuration);
+			modifyConfiguration(configuration);
 
 			SessionFactory = configuration.BuildSessionFactory();
 
