@@ -2,7 +2,6 @@
 using NHibernate.Linq;
 using NHibernate.Cfg;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NHibernate.Caches.SysCache;
 using Nerula.Data;
 using System.Collections.Generic;
 using log4net;
@@ -30,12 +29,18 @@ namespace Nerula.Test
                 cfg
                     .SetProperty(Environment.UseSecondLevelCache, "true")
                     .SetProperty(Environment.CacheDefaultExpiration, "10") // Default 2nd lvl cache expiration, in seconds
-                    .SetProperty(Environment.CacheProvider, typeof(SysCacheProvider).AssemblyQualifiedName)
+                    .SetProperty(Environment.CacheProvider, typeof(NHibernate.Cache.HashtableCacheProvider).AssemblyQualifiedName)
                     .AddAssembly(typeof(Blog).Assembly)
                     .SetCacheConcurrencyStrategy(typeof(Blog).FullName, "read-write")
                     .SetCacheConcurrencyStrategy(typeof(Post).FullName, "read-write")
                     .SetCacheConcurrencyStrategy(typeof(Project).FullName, "read-write");
             });
+        }
+
+        [TestCleanup]
+        public void TestCleanup()
+        {
+            DatabaseTearDown();
         }
 
         /// <summary>
@@ -141,9 +146,9 @@ namespace Nerula.Test
         {
             CreateData();
 
-            SessionFactory.EvictEntity(typeof(Blog).FullName);
-
             log4net.Config.BasicConfigurator.Configure(memoryAppender);
+
+            SessionFactory.EvictEntity(typeof(Blog).FullName);
 
             using (var session = SessionFactory.OpenSession())
             {
@@ -162,6 +167,9 @@ namespace Nerula.Test
                 "Caching: Nerula.Data.Blog#2",
                 "Cached: Nerula.Data.Blog#2"
             };
+
+            foreach (var e in memoryAppender.GetEvents())
+                System.Console.WriteLine("{0}: {1}",e.LoggerName, e.RenderedMessage);
 
             CollectionAssert.AreEqual(expectedEvents, cacheEvents);
         }

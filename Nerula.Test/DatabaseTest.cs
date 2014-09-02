@@ -1,6 +1,5 @@
 ﻿using Nerula.Data;
 using NHibernate;
-using NHibernate.Caches.SysCache;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Driver;
