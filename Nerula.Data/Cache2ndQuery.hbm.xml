@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2">
   <!-- Query without any synchronization will evict all entities from 2nd lvl cache -->
-  <sql-query name="UpdateBlogTitleWithoutSynchronize">
+  <sql-query name="UpdateBlogNameWithoutSynchronize">
     <![CDATA[
       update Blog set Name = :Name where Id = :Id
     ]]>
@@ -10,7 +10,7 @@
   </sql-query>
 
   <!-- Query with synchronization will evict entities from 2nd lvl cache where entity is related to the table -->
-  <sql-query name="UpdateBlogTitleWithSynchronize">
+  <sql-query name="UpdateBlogNameWithSynchronize">
     <![CDATA[
       update Blog set Name = :Name where Id = :Id
     ]]>

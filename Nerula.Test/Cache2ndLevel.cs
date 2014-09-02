@@ -6,6 +6,8 @@ using NHibernate.Caches.SysCache;
 using Nerula.Data;
 using System.Collections.Generic;
 using log4net;
+using log4net.Appender;
+using System.Text.RegularExpressions;
 
 namespace Nerula.Test
 {
@@ -15,12 +17,14 @@ namespace Nerula.Test
     [TestClass]
     public class Cache2ndLevel : DatabaseTest
     {
-        private static ILog log = LogManager.GetLogger(typeof(Cache2ndLevel));
+        /// <summary>
+        /// Appender to catch 2nd level cache events
+        /// </summary>
+        private readonly MemoryAppender memoryAppender = new MemoryAppender();
 
         [TestInitialize]
         public void Init2ndLvlCache()
         {
-            log4net.Config.XmlConfigurator.Configure();
             DatabaseSetup(cfg =>
             {
                 cfg
@@ -34,61 +38,180 @@ namespace Nerula.Test
             });
         }
 
+        /// <summary>
+        /// When I query without a synchronize tag, I evict all entites that are in the cache.
+        /// </summary>
         [TestMethod]
         public void UpdateQueryWithoutSynchronizeClearsWhole2ndLvlCache()
         {
             CreateData();
 
+            log4net.Config.BasicConfigurator.Configure(memoryAppender);
+
             using (var session = SessionFactory.OpenSession())
             {
                 using (var tx = session.BeginTransaction())
                 {
-                    session.GetNamedQuery("UpdatePostTitleWithoutSynchronize")
-                        .SetParameter<string>("Title", "New post title")
+                    session.GetNamedQuery("UpdateBlogNameWithoutSynchronize")
+                        .SetParameter<string>("Name", "New blog title")
                         .SetParameter<int>("Id", 2)
                         .ExecuteUpdate();
 
+                    var expectedEntitesSet = new HashSet<string>()
+                    {
+                        "Nerula.Data.Project",
+                        "Nerula.Data.Blog",
+                        "Nerula.Data.Post",
+                    };
+                    var evictedEntities = GetEvictedEntities();
+
+                    Assert.IsTrue(expectedEntitesSet.SetEquals(evictedEntities));
+                    
                     tx.Commit();
                 }
             }
-
         }
 
+        /// <summary>
+        /// When ythe synchronize tag in the query is specified, I only clear the entites that are in cache are synchronize tag.
+        /// </summary>
         [TestMethod]
         public void UpdateQueryWithSynchronizeClearsOnlyRelated2ndLvlCache()
         {
             CreateData();
 
+            log4net.Config.BasicConfigurator.Configure(memoryAppender);
+
             using (var session = SessionFactory.OpenSession())
             {
                 using (var tx = session.BeginTransaction())
                 {
-                    session.GetNamedQuery("UpdateBlogTitleWithSynchronize")
+                    session.GetNamedQuery("UpdateBlogNameWithSynchronize")
                         .SetParameter<string>("Name", "New blog name")
                         .SetParameter<int>("Id", 2)
                         .ExecuteUpdate();
 
-                    session.Get<Blog>(2);
+                    var expectedEntitesSet = new HashSet<string>()
+                    {
+                        "Nerula.Data.Blog",
+                    };
+                    var evictedEntities = GetEvictedEntities();
+                    Assert.IsTrue(expectedEntitesSet.SetEquals(evictedEntities));
+
                     tx.Commit();
                 }
             }
         }
 
         [TestMethod]
-        public void UpdateObject2ndLvlCache()
+        public void SecondGetInSessionDoesntHit2ndLvlCache()
         {
             CreateData();
 
-            SessionFactory.Evict(typeof(Blog));
+            log4net.Config.BasicConfigurator.Configure(memoryAppender);
+
+            using (var session = SessionFactory.OpenSession())
+            {
+                // first cache lookup is hited, because we inserted data
+                using (var tx = session.BeginTransaction())
+                {
+                    session.Get<Blog>(2);
+                    tx.Commit();
+                } 
+                // Second get doesn't hit the cache, because it already is in session level cache
+                using (var tx = session.BeginTransaction())
+                {
+                    session.Get<Blog>(2);
+                    tx.Commit();
+                }
+            }
+
+            var cacheEvents = GetCacheEvents();
+            var expectedEvents = new string[] 
+            {
+                "Cache lookup: Nerula.Data.Blog#2",
+                "Cache hit: Nerula.Data.Blog#2",
+            };
+
+            CollectionAssert.AreEqual(expectedEvents, cacheEvents);
+        }
+
+        [TestMethod]
+        public void Full2ndLvlCacheMiss()
+        {
+            CreateData();
+
+            SessionFactory.EvictEntity(typeof(Blog).FullName);
+
+            log4net.Config.BasicConfigurator.Configure(memoryAppender);
 
             using (var session = SessionFactory.OpenSession())
             {
                 using (var tx = session.BeginTransaction())
                 {
-                    session.Load<Blog>(2).Name = "New post title";
+                    session.Get<Blog>(2);
                     tx.Commit();
                 }
             }
+
+            var cacheEvents = GetCacheEvents();
+            var expectedEvents = new string[] 
+            {
+                "Cache lookup: Nerula.Data.Blog#2",
+                "Cache miss: Nerula.Data.Blog#2",
+                "Caching: Nerula.Data.Blog#2",
+                "Cached: Nerula.Data.Blog#2"
+            };
+
+            CollectionAssert.AreEqual(expectedEvents, cacheEvents);
+        }
+
+        [TestMethod]
+        public void Update2ndLvlCache()
+        {
+            CreateData();
+
+            log4net.Config.BasicConfigurator.Configure(memoryAppender);
+
+            using (var session = SessionFactory.OpenSession())
+            {
+                using (var tx = session.BeginTransaction())
+                {
+                    session.Get<Blog>(2).Name = "New blog name";
+                    tx.Commit();
+                }
+            }
+
+            var cacheEvents = GetCacheEvents();
+            var expectedEvents = new string[] 
+            {
+                "Cache lookup: Nerula.Data.Blog#2",
+                "Cache hit: Nerula.Data.Blog#2",
+                "Invalidating: Nerula.Data.Blog#2",
+                "Updating: Nerula.Data.Blog#2",
+                "Updated: Nerula.Data.Blog#2"
+            };
+
+            CollectionAssert.AreEqual(expectedEvents, cacheEvents);
+        }
+
+        private string[] GetCacheEvents()
+        {
+            var cacheEvents = memoryAppender.GetEvents()
+                .Where(e => e.LoggerName == "NHibernate.Cache.ReadWriteCache")
+                .Select(e => e.RenderedMessage)
+                .ToArray();
+            return cacheEvents;
+        }
+
+        private IEnumerable<string> GetEvictedEntities()
+        {
+            var evictedEntities = memoryAppender.GetEvents()
+                //.Where(e => e.RenderedMessage.Contains("evicting second-level cache"))
+                .Select(e => Regex.Match(e.RenderedMessage, ".*evicting second-level cache: (.*)").Groups)
+                .Where(g => g.Count > 1)
+                .Select(g => g[1].Value);
+            return evictedEntities;
         }
 
         public void CreateData()
